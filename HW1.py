@@ -6,6 +6,7 @@ import requests
 import StringIO
 import zipfile
 
+# Problem 1a
 req = requests.get("http://seanlahman.com/baseball-archive/statistics")
 page = req.text
 
@@ -36,5 +37,32 @@ file2 = zip_file_object.open(zip_list[file2_idx])
 salaries = pd.read_csv(file1)
 teams = pd.read_csv(file2)
 
-Salaries.head()
-Teams.head()
+salaries.head()
+teams.head()
+
+# Problem 1b
+list(salaries)
+sum_salaries = salaries.groupby(['yearID', 'teamID'], as_index=False).sum()
+sum_salaries.head()
+
+# Problem 1c
+list(teams)
+teams_subset = teams.loc[:,['yearID', 'teamID', 'W']]
+merged_df = pd.merge(sum_salaries, teams_subset, how = 'inner', on = ['yearID', 'teamID'])
+merged_df.head()
+
+# Problem 1d
+plt.scatter(merged_df['salary'],merged_df['W'])
+plt.show()
+
+unique_years = merged_df['yearID'].unique()
+fig = []
+j = 0
+for l in unique_years:
+    yearly_df = merged_df[merged_df.yearID==l]
+    fig[j] = plt.scatter(yearly_df['salary'], yearly_df['W'])
+    j = j+1
+
+
+
+
