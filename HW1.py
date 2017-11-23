@@ -52,16 +52,18 @@ merged_df = pd.merge(sum_salaries, teams_subset, how = 'inner', on = ['yearID', 
 merged_df.head()
 
 # Problem 1d
-plt.scatter(merged_df['salary'],merged_df['W'])
-plt.show()
-
 unique_years = merged_df['yearID'].unique()
-fig = []
-j = 0
-for l in unique_years:
-    yearly_df = merged_df[merged_df.yearID==l]
-    fig[j] = plt.scatter(yearly_df['salary'], yearly_df['W'])
-    j = j+1
+f, axarr = plt.subplots(3, 10)
+j = 1
+for k in unique_years:
+    yearly_df = merged_df[merged_df.yearID == k]
+    yearly_oak_df = merged_df[(merged_df['teamID'] == "OAK") & (merged_df['yearID'] == k)]
+    axarr[j/10, j%10].scatter(yearly_df['salary'], yearly_df['W'])
+    axarr[j/10, j%10].set_title(k)
+    axarr[j / 10, j % 10].scatter(yearly_oak_df['salary'], yearly_oak_df['W'])
+    j += 1
+
+plt.show()
 
 
 
