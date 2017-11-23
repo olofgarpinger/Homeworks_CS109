@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn import datasets, linear_model
 
 import requests
 import StringIO
@@ -64,7 +65,4 @@ for k in unique_years:
     j += 1
 
 plt.show()
-
-
-
 
