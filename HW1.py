@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn import datasets, linear_model
 
 import requests
 import StringIO
@@ -14,7 +13,6 @@ page = req.text
 from bs4 import BeautifulSoup
 soup = BeautifulSoup(page, 'html.parser')
 
-soup.find_all("a",href=True)
 link_list = [l.get('href') for l in soup.findAll('a')]
 my_list = []
 for l in link_list:
@@ -66,3 +64,32 @@ for k in unique_years:
 
 plt.show()
 
+
+# Problem 2a
+req = requests.get("http://www.worldatlas.com/cntycont.htm")
+page = req.text
+
+soup = BeautifulSoup(page, 'html.parser')
+
+link_data_list = [l for l in soup.findAll('a') if (l is not None)]
+text_list = [l.contents[0] for l in link_data_list]
+link_list = [str(l.get('href')) for l in link_data_list]
+
+ID = [str(l).find("http://www.worldatlas.com/webimage/countrys/")>-1 for l in link_list]
+
+countries_tmp = [text_list[j] for j in range(0,len(text_list)) if ID[j]]
+countries_tmp = [x.encode('ascii').lower() for x in countries_tmp]
+
+import re
+links = [link_list[j] for j in range(0,len(text_list)) if ID[j]]
+continents = [re.compile('countrys/(.*?)/').search(l).group(1) for l in links]
+
+countries = pd.DataFrame({'country': countries, 'continent': continents})
+
+gdp_per_capita_tmp = pd.read_csv("gdp_per_capita_ppp.csv").dropna()
+
+gdp_per_capita = pd.melt(gdp_per_capita_tmp, id_vars=['GDP per capita'],var_name = "year", value_name="gdp_per_capita").rename(columns={'GDP per capita': 'country'})
+gdp_per_capita.year=gdp_per_capita.year.apply(int)
+gdp_per_capita['country'] = gdp_per_capita['country'].str.lower()
+
+gdp_per_capita_merged = pd.merge(gdp_per_capita, countries, how = 'inner', on = ['country'])
