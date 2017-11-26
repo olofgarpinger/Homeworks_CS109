@@ -84,12 +84,38 @@ import re
 links = [link_list[j] for j in range(0,len(text_list)) if ID[j]]
 continents = [re.compile('countrys/(.*?)/').search(l).group(1) for l in links]
 
-countries = pd.DataFrame({'country': countries, 'continent': continents})
+countries = pd.DataFrame({'country': countries_tmp, 'continent': continents})
+d = {"continent": ["asia"], "country": ["west bank and gaza"]}
+df = pd.DataFrame(data=d)
+countries = countries.append(df)
+countries.country[countries.country=='burkina'] = 'burkina faso'
+countries.country[countries.country=='congo, democratic republic of'] = 'congo, dem. rep.'
+countries.country[countries.country=='congo'] = 'congo, rep.'
+countries.country[countries.country=='saint kitts and nevis'] = 'st. kitts and nevis'
+countries.country[countries.country=='saint lucia'] = 'st. lucia'
+countries.country[countries.country=='saint vincent and the grenadines'] = 'st. vincent and the grenadines'
+countries.country[countries.country=='slovakia'] = 'slovak republic'
+countries.country[countries.country=="burma ("] = "myanmar"
+countries.country[countries.country=='russian federation'] = 'russia'
+countries.country[countries.country=='korea, south'] = 'south korea'
+countries.country[countries.country=='korea, north'] = 'north korea'
+countries.country[countries.country=='kyrgyzstan'] = 'kyrgyz republic'
+countries.country[countries.country=='ivory coast'] = "cote d'ivoire"
+countries.country[countries.country=="laos"] = "lao"
+countries.country[countries.country=="macedonia"] = "macedonia, fyr"
+
 
 gdp_per_capita_tmp = pd.read_csv("gdp_per_capita_ppp.csv").dropna()
 
 gdp_per_capita = pd.melt(gdp_per_capita_tmp, id_vars=['GDP per capita'],var_name = "year", value_name="gdp_per_capita").rename(columns={'GDP per capita': 'country'})
 gdp_per_capita.year=gdp_per_capita.year.apply(int)
 gdp_per_capita['country'] = gdp_per_capita['country'].str.lower()
+
+
+# unique_countries1 = countries.country.unique()
+# unique_countries2 = gdp_per_capita.country.unique()
+
+# unique_countries2[~np.isin(unique_countries2,unique_countries1)]
+# unique_countries1[~np.isin(unique_countries1,unique_countries2)]
 
 gdp_per_capita_merged = pd.merge(gdp_per_capita, countries, how = 'inner', on = ['country'])
