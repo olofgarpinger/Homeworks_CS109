@@ -3,7 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import requests
-import StringIO
 import zipfile
 
 # Problem 1a
@@ -69,6 +68,7 @@ plt.show()
 req = requests.get("http://www.worldatlas.com/cntycont.htm")
 page = req.text
 
+from bs4 import BeautifulSoup
 soup = BeautifulSoup(page, 'html.parser')
 
 link_data_list = [l for l in soup.findAll('a') if (l is not None)]
@@ -143,3 +143,30 @@ for ii in years:
 
 plt.show()
 
+# Problem 3a
+from scipy import stats
+
+def ratioNormals(diff, a):
+    X = stats.norm(loc=diff, scale=1)
+    Y = stats.norm(loc=0, scale=1)
+    PrX = X.sf(a)
+    PrY = Y.sf(a)
+    return PrX/PrY
+
+x = np.linspace(0,5,51)
+a2 = [ratioNormals(diff = i, a = 2) for i in x]
+a3 = [ratioNormals(diff = i, a = 3) for i in x]
+a4 = [ratioNormals(diff = i, a = 4) for i in x]
+a5 = [ratioNormals(diff = i, a = 5) for i in x]
+
+plt.yscale('log')
+plt.plot(x, a2)
+plt.plot(x, a3)
+plt.plot(x, a4)
+plt.plot(x, a5)
+
+# Problem 3b
+gdp_2012 = sliced_by_year(gdp_per_capita_merged, 2012)
+gdp_2012_a_sa = gdp_2012[(gdp_2012.continent == "asia") | (gdp_2012.continent == "samerica")]
+gdp_2012_a_sa.groupby("continent", as_index = False).mean()
+gdp_2012_a_sa.boxplot('gdp_per_capita', by = "continent")
