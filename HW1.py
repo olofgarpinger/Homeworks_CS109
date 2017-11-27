@@ -85,7 +85,11 @@ links = [link_list[j] for j in range(0,len(text_list)) if ID[j]]
 continents = [re.compile('countrys/(.*?)/').search(l).group(1) for l in links]
 
 countries = pd.DataFrame({'country': countries_tmp, 'continent': continents})
-d = {"continent": ["asia"], "country": ["west bank and gaza"]}
+d = {"continent": ["asia", "samerica", "namerica", "namerica", "namerica",
+                   "asia", "asia", "namerica", "asia", "namerica"],
+     "country": ["west bank and gaza", "aruba", "bermuda", "cayman islands",
+                 "greenland", "hong kong, china", "macao, china",
+                 "puerto rico", "taiwan", "turks and caicos islands"]}
 df = pd.DataFrame(data=d)
 countries = countries.append(df)
 countries.country[countries.country=='burkina'] = 'burkina faso'
@@ -103,7 +107,8 @@ countries.country[countries.country=='kyrgyzstan'] = 'kyrgyz republic'
 countries.country[countries.country=='ivory coast'] = "cote d'ivoire"
 countries.country[countries.country=="laos"] = "lao"
 countries.country[countries.country=="macedonia"] = "macedonia, fyr"
-
+countries.country[countries.country=="east timor"] = "timor-leste"
+countries.country[countries.country=="micronesia"] = "micronesia, fed. sts."
 
 gdp_per_capita_tmp = pd.read_csv("gdp_per_capita_ppp.csv").dropna()
 
@@ -119,3 +124,22 @@ gdp_per_capita['country'] = gdp_per_capita['country'].str.lower()
 # unique_countries1[~np.isin(unique_countries1,unique_countries2)]
 
 gdp_per_capita_merged = pd.merge(gdp_per_capita, countries, how = 'inner', on = ['country'])
+gdp_per_capita_merged.head()
+
+# Problem 2b
+plt.hist(gdp_per_capita_merged[gdp_per_capita_merged.year==2000].gdp_per_capita, bins = 20)
+plt.show()
+
+# Problem 2c
+def sliced_by_year(df, year):
+    return gdp_per_capita_merged[gdp_per_capita_merged.year == year]
+
+# Problem 2d
+years = np.arange(1950,2011,10)
+for ii in years:
+    tmp = sliced_by_year(gdp_per_capita_merged, ii)
+    tmp.boxplot(column="gdp_per_capita", by="continent")
+    plt.yscale('log')
+
+plt.show()
+
