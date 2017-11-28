@@ -170,3 +170,26 @@ gdp_2012 = sliced_by_year(gdp_per_capita_merged, 2012)
 gdp_2012_a_sa = gdp_2012[(gdp_2012.continent == "asia") | (gdp_2012.continent == "samerica")]
 gdp_2012_a_sa.groupby("continent", as_index = False).mean()
 gdp_2012_a_sa.boxplot('gdp_per_capita', by = "continent")
+
+# Problem 3c
+prop_greater_than_10000 = round(gdp_2012[gdp_2012.gdp_per_capita > 10000].shape[0]/float(gdp_2012.shape[0]),3)*100
+prop_greater_than_10000
+
+gdp_2012_ext = gdp_2012.assign(greater_than_10000 = gdp_2012.gdp_per_capita > 10000)
+greater_than_10000_grouped = gdp_2012_ext.groupby(["continent","greater_than_10000"])["country"].count()
+greater_than_10000_grouped.groupby(level=0).apply(lambda x: x/x.sum() * 100)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
